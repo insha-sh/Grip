@@ -1,0 +1,69 @@
+---
+title: 'Grip Task #2'
+author: "Insha Shah"
+date: "6/17/2021"
+output: html_document
+---
+
+Topic: Prediction Using Unsupervised Machine Learning
+
+Problem: From the ‘Iris’ dataset, predict the optimum number of clusters 
+and represent it visually. 
+
+Load the required packages
+```{r}
+library(cluster)
+```
+
+Load the Iris Dataset
+```{r}
+data<-iris[,-5]
+head(iris)
+```
+
+Finding the optimum number of clusters for k-means classification
+```{r}
+set.seed(123)
+tot_within_ss<- vector(mode = "character", length = 10)
+for (i in 1:10) {
+  iriscluster<- kmeans(data[,1:4], centers = i, nstart = 20)
+  tot_within_ss[i] <- iriscluster$tot.withinss
+}
+```
+
+Plotting the results onto a line graph
+```{r}
+plot(1:10, tot_within_ss, type = "b", pch = 19)
+```
+
+The optimum clusters is where the elbow occurs.
+Thus, the number of clusters is '3'.
+
+Applying Kmeans to the dataset
+```{r}
+set.seed(123)
+kmean <- kmeans(data[,1:4], centers = 3, iter.max = 300)
+kmean
+```
+
+Confusion Matrix-Comparing the predicted clusters with the original data
+```{r}
+table(kmean$cluster, iris$Species)
+```
+All 50 Setosa are correctly classified as Setosa.
+Out of 62 Versicolor,48 are correctly classified as Versicolor and 14 are classified as Virginica
+Out of 38 Virginica, 36 are correctly classified as Virginica and 2 are classified as Versicolor 
+
+Visualizing the cluster - First two columns
+```{r}
+clusplot(data[,c(1,2)], 
+         kmean$cluster,
+         shade = T, 
+         color = T,
+         lines = 0,
+         span = T,
+         main = "Cluster Iris",
+         xlab = "Sepal Length",
+         ylab = "Sepal Width", 
+         plotchar = T)
+```
